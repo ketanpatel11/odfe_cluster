@@ -1,0 +1,33 @@
+version: '3'
+services:
+  elasticsearch:
+    image: amazon/opendistro-for-elasticsearch:latest
+    container_name: elasticsearch
+    environment:
+      ES_JAVA_OPTS: "-Xmx256m -Xms256m"
+      discovery.type: single-node
+    volumes:
+      - elasticsearch:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
+      - 9600:9600 # required for Performance Analyzer
+    networks:
+      - elasticsearch
+  kibana:
+    image: amazon/opendistro-for-elasticsearch-kibana:latest
+    container_name: kibana
+    ports:
+      - 5601:5601
+    expose:
+      - "5601"
+    environment:
+      ELASTICSEARCH_URL: https://elasticsearch:9200
+      ELASTICSEARCH_HOSTS: https://elasticsearch:9200
+    networks:
+      - elasticsearch
+    depends_on:
+      - elasticsearch
+volumes:
+   elasticsearch:
+networks:
+   elasticsearch:
